@@ -1,0 +1,42 @@
+#include <iostream>
+#include <thread>
+#include <vector>
+using namespace std;
+
+const int N = 3;
+ 
+void matrix_multiply(const vector<vector<int>>& A, const vector<vector<int>>& B, vector<vector<int>>& C, int row) {
+    for (int col = 0; col < N; ++col) {
+        C[row][col] = 0;
+        for (int k = 0; k < N; ++k) {
+            C[row][col] += A[row][k] * B[k][col];
+        }
+    }
+}
+
+int main() {
+    vector<vector<int>> A = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    vector<vector<int>> B = {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
+    vector<vector<int>> C(N, vector<int>(N, 0));
+
+    vector<thread> threads;
+
+    for (int i = 0; i < N; ++i) {
+        threads.emplace_back(matrix_multiply, ref(A), ref(B), ref(C), i);
+    }
+
+    
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+ 
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            cout << C[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
